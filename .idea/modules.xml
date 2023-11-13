@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Quick Save Backups.iml" filepath="$PROJECT_DIR$/Quick Save Backups.iml" />
+      <module fileurl="file://$PROJECT_DIR$/qsBackup.iml" filepath="$PROJECT_DIR$/qsBackup.iml" />
     </modules>
   </component>
 </project>

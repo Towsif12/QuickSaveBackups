@@ -1,5 +1,8 @@
 package me.rockyhawk.qsBackup;
 
+import github.scarsz.discordsrv.DiscordSRV;
+import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel;
+import github.scarsz.discordsrv.dependencies.jda.api.requests.GatewayIntent;
 import me.rockyhawk.qsBackup.commands.quickSaveCommand;
 import me.rockyhawk.qsBackup.completeTabs.qsTabComplete;
 import me.rockyhawk.qsBackup.fileclasses.OldBackupRemoval;
@@ -56,6 +59,11 @@ public class QuickSave extends JavaPlugin {
         this.config.addDefault("amount.maximum_enabled", true); //if you want to set a maximum
         this.config.addDefault("amount.maximum_value", 40); //amount of backups allowed per world
 
+        this.config.addDefault("discord.enabled", false);
+        this.config.addDefault("discord.server_name", "server1"); //server name for discord message
+        this.config.addDefault("discord.channel_id", "000000000000000"); //channel to send the backup in
+
+
         tag = config.getString("format.tag") + " ";
 
         List<String> backupWorlds = new ArrayList();
@@ -86,10 +94,22 @@ public class QuickSave extends JavaPlugin {
         saveFolder.mkdir();
         File rootServerFolder = new File(getServer().getWorldContainer().getPath());
         //get the date for the file names
-        String strDate = new SimpleDateFormat("dd-MMM-yyyy HH-mm-ss").format(Calendar.getInstance().getTime());
+        String strDate = new SimpleDateFormat("dd-MMM-yyyy hh-mm-ss a").format(Calendar.getInstance().getTime());
         for (String worldName : backupWorlds) {
+
+            TextChannel channel = null;
+
             new File(saveFolder.getAbsolutePath() + File.separator + worldName).mkdir();
-            zipper.zip(new File(rootServerFolder.getAbsolutePath() + File.separator + worldName), saveFolder.getAbsolutePath() + File.separator + worldName + File.separator + strDate + ".zip");
+            File world = new File(rootServerFolder.getAbsolutePath() + File.separator + worldName);
+            String filename = worldName + File.separator + strDate + ".zip";
+            String path = saveFolder.getAbsolutePath() + File.separator + filename;
+
+            if(config.getBoolean("discord.enabled") && isClass("github.scarsz.discordsrv.DiscordSRV")) {
+                channel = DiscordSRV.getPlugin().getJda().getTextChannelById(config.getString("discord.channel_id"));
+                zipper.zip(world, path, channel, worldName, filename, strDate);
+            } else {
+                zipper.zip(world, path, channel, worldName, filename, strDate);
+            }
         }
     }
 
@@ -129,5 +149,13 @@ public class QuickSave extends JavaPlugin {
         }.runTaskTimer(this,
                 config.getBoolean("config.asyncBackup") ? intervalInTicks / config.getStringList("config.worldsToBackup").size() : intervalInTicks,
                 config.getBoolean("config.asyncBackup") ? intervalInTicks / config.getStringList("config.worldsToBackup").size() : intervalInTicks );
+    }
+    private boolean isClass(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 }
