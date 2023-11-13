@@ -40,7 +40,7 @@ public class QuickSave extends JavaPlugin {
 
         this.getCommand("quicksave").setTabCompleter(new qsTabComplete(this));
         this.getCommand("quicksave").setExecutor(new quickSaveCommand(this));
-        new Metrics(this);
+        new Metrics(this, 20287);
 
         this.config.addDefault("config.version", 1.1);
         this.config.addDefault("config.autoBackup", true); //if auto backups are enabled
