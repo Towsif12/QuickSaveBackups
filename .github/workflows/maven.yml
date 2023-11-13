@@ -45,7 +45,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/*.jar
-          tag: ${{ env.sha_short }} - ${{ env.RELEASE_VERSION }}
+          tag: ${{ env.sha_short }}-${{ env.RELEASE_VERSION }}
           overwrite: true
           file_glob: true
           body: "Automatically generated release after push to master branch."
